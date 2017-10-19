@@ -7,6 +7,7 @@
 #include <mutex>
 #include <thread>
 #include <memory>
+#include <iostream>
 #ifndef _WIN32
 #include <sys/wait.h>
 #endif
@@ -45,7 +46,7 @@ public:
   Process(const string_type &command, const string_type &path=string_type(),
           std::function<void(const char *bytes, size_t n)> read_stdout=nullptr,
           std::function<void(const char *bytes, size_t n)> read_stderr=nullptr,
-          bool open_stdin=false,
+          bool open_stdin=true,
           size_t buffer_size=131072) noexcept;
 #ifndef _WIN32
   /// Supported on Unix-like systems only.
@@ -56,6 +57,10 @@ public:
           size_t buffer_size=131072) noexcept;
 #endif
   ~Process() noexcept;
+
+        void add_arguments (std::string args);
+
+        void run();
   
   ///Get the process id of the started process.
   id_type get_id() const noexcept;
@@ -74,6 +79,8 @@ public:
   static void kill(id_type id, bool force=false) noexcept;
   
 private:
+        std::string m_command;
+        std::string m_path;
   Data data;
   bool closed;
   std::mutex close_mutex;
